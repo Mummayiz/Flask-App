@@ -1,18 +1,58 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="auth-layout">
+<section class="auth-layout auth-layout-login">
   <div class="auth-poster">
-    <p class="eyebrow">Pulseboard</p>
-    <h1>Build better days from the habits you can actually measure.</h1>
-    <p>Track tasks, focus sessions, hobbies, and productivity trends in one clean local workspace.</p>
+    <div class="auth-poster-top">
+      <p class="eyebrow">Pulseboard</p>
+      <div class="auth-chip-row">
+        <span class="auth-chip">Tasks</span>
+        <span class="auth-chip">Focus</span>
+        <span class="auth-chip">Hobbies</span>
+        <span class="auth-chip">Coach</span>
+      </div>
+    </div>
+
+    <div class="auth-poster-body">
+      <h1>Build calm, high-output days from habits you can actually see.</h1>
+      <p>
+        Track your work, focus blocks, recovery time, and personal trends in one bright,
+        polished workspace that feels like a real product.
+      </p>
+    </div>
+
+    <div class="auth-metrics">
+      <article>
+        <strong>1000+</strong>
+        <span>seeded users for admin analytics</span>
+      </article>
+      <article>
+        <strong>Local</strong>
+        <span>JSON storage with no database</span>
+      </article>
+      <article>
+        <strong>Instant</strong>
+        <span>dashboards respond to each action</span>
+      </article>
+    </div>
   </div>
 
-  <form class="auth-form" method="post">
-    <h2>Sign in</h2>
+  <form class="auth-form auth-card" method="post">
+    <div class="auth-form-head">
+      <p class="eyebrow">Welcome back</p>
+      <h2>Sign in</h2>
+      <p class="form-note">Enter your details to open your personal productivity workspace.</p>
+    </div>
+
     <label>Username or email<input name="login" placeholder="Enter username or email" required></label>
     <label>Password<input type="password" name="password" placeholder="Enter password" required></label>
+
     <button type="submit">Enter workspace</button>
-    <p class="form-note">Admin demo: <strong>admin</strong> / <strong>admin123</strong></p>
+
+    <div class="auth-demo">
+      <span>Admin demo</span>
+      <strong>admin / admin123</strong>
+    </div>
+
     <p class="form-note">Need an account? <a href="{{ url_for('app_routes.register') }}">Create one</a></p>
   </form>
 </section>

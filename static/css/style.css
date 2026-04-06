@@ -43,6 +43,10 @@ button, input, select, textarea { font: inherit; }
   grid-template-columns: 280px minmax(0, 1fr);
 }
 
+.shell.auth-shell {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .sidebar {
   position: sticky;
   top: 0;
@@ -118,7 +122,11 @@ button, input, select, textarea { font: inherit; }
 .quiet-link { color: var(--accent); }
 
 .page { padding: 28px; }
-.auth-page { display: grid; place-items: center; }
+.auth-page {
+  display: block;
+  min-height: 100vh;
+  padding: 18px;
+}
 
 .flash-stack { display: grid; gap: 10px; margin-bottom: 18px; }
 .flash {
@@ -324,20 +332,28 @@ input, select, textarea {
 .heat-4 { background: rgba(66, 165, 245, 0.88); }
 
 .auth-layout {
-  width: min(1120px, 100%);
+  width: min(1420px, 100%);
+  min-height: calc(100vh - 36px);
+  margin: 0 auto;
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 20px;
+  grid-template-columns: minmax(0, 1.22fr) minmax(420px, 0.78fr);
+  gap: 26px;
+  align-items: stretch;
 }
 
-.auth-poster, .auth-form { padding: 34px; }
+.auth-poster,
+.auth-form {
+  padding: 38px;
+}
 
 .auth-poster {
-  min-height: 78vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: end;
-  background: linear-gradient(180deg, rgba(61, 139, 253, 0.07), transparent 35%), linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(223, 239, 255, 0.95));
+  min-height: calc(100vh - 36px);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 28px;
+  background:
+    radial-gradient(circle at top left, rgba(61, 139, 253, 0.16), transparent 30%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(223, 239, 255, 0.95));
 }
 
 body[data-theme="dark"] .auth-poster {
@@ -345,14 +361,118 @@ body[data-theme="dark"] .auth-poster {
 }
 
 .auth-poster h1 {
-  margin: 0 0 16px;
-  font-size: clamp(2.3rem, 6vw, 4.7rem);
-  line-height: 0.96;
+  margin: 0 0 18px;
+  font-size: clamp(3rem, 7vw, 6.2rem);
+  line-height: 0.9;
   letter-spacing: -0.06em;
-  max-width: 10ch;
+  max-width: 8ch;
 }
 
-.auth-form { display: grid; gap: 14px; align-content: center; }
+.auth-poster-top,
+.auth-poster-body {
+  display: grid;
+  gap: 18px;
+}
+
+.auth-poster-body {
+  align-content: center;
+  max-width: 760px;
+}
+
+.auth-poster-body p {
+  max-width: 52ch;
+  font-size: 1.08rem;
+}
+
+.auth-chip-row,
+.auth-metrics,
+.auth-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.auth-chip {
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.56);
+  color: var(--accent);
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 0.92rem;
+}
+
+.auth-metrics article,
+.auth-steps div {
+  min-width: 180px;
+  flex: 1 1 180px;
+  padding: 18px 20px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.auth-metrics strong,
+.auth-steps strong {
+  display: block;
+  font-size: 1.35rem;
+  margin-bottom: 8px;
+}
+
+.auth-metrics span,
+.auth-steps span {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.auth-form {
+  display: grid;
+  gap: 18px;
+  align-content: center;
+}
+
+.auth-card {
+  max-width: 520px;
+  width: 100%;
+  justify-self: center;
+  background: rgba(255, 255, 255, 0.96);
+}
+
+body[data-theme="dark"] .auth-card {
+  background: rgba(11, 21, 37, 0.92);
+}
+
+.auth-form-head {
+  display: grid;
+  gap: 10px;
+}
+
+.auth-form h2 {
+  margin: 0;
+  font-size: 2.25rem;
+  letter-spacing: -0.04em;
+}
+
+.auth-form button {
+  margin-top: 6px;
+}
+
+.auth-demo {
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: var(--accent-soft);
+}
+
+.auth-demo span {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.auth-demo strong {
+  font-size: 1.05rem;
+}
 
 .timer-shell {
   display: grid;
@@ -374,4 +494,12 @@ body[data-theme="dark"] .auth-poster {
     grid-template-columns: 1fr;
   }
   .sidebar { position: static; min-height: auto; }
+  .auth-layout,
+  .auth-poster {
+    min-height: auto;
+  }
+  .auth-poster h1 {
+    max-width: 10ch;
+    font-size: clamp(2.6rem, 12vw, 4.6rem);
+  }
 }

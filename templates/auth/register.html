@@ -1,17 +1,42 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="auth-layout">
+<section class="auth-layout auth-layout-register">
   <div class="auth-poster">
-    <p class="eyebrow">New account</p>
-    <h1>Create your own productivity workspace.</h1>
-    <p>Your account gets a dedicated dashboard, calendar, focus tracker, hobbies log, and coach view.</p>
+    <div class="auth-poster-top">
+      <p class="eyebrow">New account</p>
+      <div class="auth-chip-row">
+        <span class="auth-chip">Personal dashboard</span>
+        <span class="auth-chip">Daily planner</span>
+        <span class="auth-chip">Offline coach</span>
+      </div>
+    </div>
+
+    <div class="auth-poster-body">
+      <h1>Create your own productivity workspace in a minute.</h1>
+      <p>
+        Every new account gets a private dashboard, task manager, focus tracker,
+        hobby log, calendar planner, and a friendly coach experience.
+      </p>
+    </div>
+
+    <div class="auth-steps">
+      <div><strong>1</strong><span>Create your account</span></div>
+      <div><strong>2</strong><span>Track tasks and sessions</span></div>
+      <div><strong>3</strong><span>Watch your dashboard respond</span></div>
+    </div>
   </div>
 
-  <form class="auth-form" method="post">
-    <h2>Register</h2>
+  <form class="auth-form auth-card" method="post">
+    <div class="auth-form-head">
+      <p class="eyebrow">Get started</p>
+      <h2>Create account</h2>
+      <p class="form-note">Choose a username, add your email, and set a secure password.</p>
+    </div>
+
     <label>Username<input name="username" minlength="3" placeholder="Choose a username" required></label>
     <label>Email<input type="email" name="email" placeholder="you@example.com" required></label>
     <label>Password<input type="password" name="password" minlength="8" placeholder="Minimum 8 characters" required></label>
+
     <button type="submit">Create account</button>
     <p class="form-note">Already registered? <a href="{{ url_for('app_routes.login') }}">Sign in</a></p>
   </form>

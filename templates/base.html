@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   </head>
   <body data-theme="light">
-    <div class="shell">
+    <div class="shell {% if not current_user %}auth-shell{% endif %}">
       {% if current_user %}
       <aside class="sidebar">
         <div>
