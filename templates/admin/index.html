@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="surface-header">
+  <div>
+    <p class="eyebrow">Admin Dashboard</p>
+    <h1>Compare users and monitor overall productivity.</h1>
+    <p class="section-copy">This admin view uses data from all users, not just one account.</p>
+  </div>
+</section>
+
+<section class="metric-row">
+  <article><span>Total Users</span><strong>{{ analytics.user_count }}</strong></article>
+  <article><span>Average Focus</span><strong>{{ analytics.average_focus }}</strong></article>
+  <article><span>Average Score</span><strong>{{ analytics.average_score }}</strong></article>
+  <article><span>Avg Completed</span><strong>{{ analytics.average_completed_tasks }}</strong></article>
+</section>
+
+<section class="workspace-grid">
+  <div class="panel">
+    <div class="panel-head"><h2>Admin Analytics</h2><p>Dynamic comparisons generated from the JSON dataset.</p></div>
+    <div class="chart-grid admin-chart-grid">
+      <div><h3>Most Productive Users</h3><canvas class="chart-canvas" data-chart-kind="bar" data-chart='{{ chart_payload|safe }}' data-key="topProductive"></canvas></div>
+      <div><h3>Most Active Users</h3><canvas class="chart-canvas" data-chart-kind="bar" data-chart='{{ chart_payload|safe }}' data-key="mostActive"></canvas></div>
+      <div><h3>Task Completion Rankings</h3><canvas class="chart-canvas" data-chart-kind="bar" data-chart='{{ chart_payload|safe }}' data-key="taskCompletion"></canvas></div>
+      <div><h3>Focus Time Comparison</h3><canvas class="chart-canvas" data-chart-kind="bar" data-chart='{{ chart_payload|safe }}' data-key="focusComparison"></canvas></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h2>Search Users</h2><p>Open a user profile to inspect tasks, focus, hobbies, and activity logs.</p></div>
+    <form class="prompt-row" method="get">
+      <input name="q" value="{{ query }}" placeholder="Search username or email">
+      <button type="submit">Search</button>
+    </form>
+    <div class="stack-list">
+      {% for item in users[:40] %}
+      <a class="stack-item linked" href="{{ url_for('app_routes.admin_user', user_id=item.id) }}">
+        <div><strong>{{ item.username }}</strong><p>{{ item.email }}</p></div>
+      </a>
+      {% else %}
+      <p class="muted-empty">No users match that search.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="workspace-grid">
+  <div class="panel">
+    <div class="panel-head"><h2>Top Productivity</h2><p>Ranked by score.</p></div>
+    <div class="stack-list">
+      {% for item in analytics.leaderboard %}
+      <article class="stack-item">
+        <div><strong>{{ item.name }}</strong><p>{{ item.email }}</p></div>
+        <div class="metric-mini"><span>{{ item.score }}/100</span><em>{{ item.focus_minutes }} min</em></div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h2>Most Active</h2><p>Ranked by overall recorded activity.</p></div>
+    <div class="stack-list">
+      {% for item in analytics.most_active %}
+      <article class="stack-item">
+        <div><strong>{{ item.name }}</strong><p>{{ item.activity_count }} activity events</p></div>
+        <div class="metric-mini"><span>{{ item.completion_rate }}%</span><em>completion</em></div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="surface-header">
+  <div>
+    <p class="eyebrow">Calendar</p>
+    <h1>Put intent on the timeline.</h1>
+    <p class="section-copy">Use dates and time blocks to turn plans into something you can follow.</p>
+  </div>
+</section>
+<section class="workspace-grid dual">
+  <form class="panel form-panel" method="post">
+    <div class="panel-head"><h2>Add Event</h2><p>Schedule work, recovery, or milestones.</p></div>
+    <label>Title<input name="title" placeholder="Event title" required></label>
+    <label>Date<input type="date" name="date" value="{{ today }}" required></label>
+    <label>Time<input type="time" name="time"></label>
+    <label>Type<select name="type"><option>task</option><option>focus</option><option>hobby</option><option>meeting</option></select></label>
+    <label>Notes<textarea name="notes" rows="3"></textarea></label>
+    <button type="submit">Save event</button>
+  </form>
+  <div class="panel">
+    <div class="panel-head"><h2>Schedule</h2><p>Grouped by day for quick scanning.</p></div>
+    <div class="date-groups">
+      {% for day, day_events in grouped.items() %}
+      <section>
+        <h3>{{ day }}</h3>
+        {% for event in day_events %}
+        <article class="stack-item">
+          <div><strong>{{ event.title }}</strong><p>{{ event.type|title }} {% if event.time %}at {{ event.time }}{% endif %}</p></div>
+          <form method="post" action="{{ url_for('app_routes.calendar_delete', event_id=event.id) }}">
+            <button class="ghost danger" type="submit">Delete</button>
+          </form>
+        </article>
+        {% endfor %}
+      </section>
+      {% else %}
+      <p class="muted-empty">Nothing scheduled yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

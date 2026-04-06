@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="surface-header">
+  <div>
+    <p class="eyebrow">AI Coach</p>
+    <h1>Friendly guidance based on your own habits.</h1>
+    <p class="section-copy">Ask for help with focus, planning, consistency, and recovery.</p>
+  </div>
+</section>
+
+<section class="workspace-grid dual">
+  <div class="panel">
+    <div class="panel-head"><h2>Coach Chat</h2><p>Ask one question and get practical next steps.</p></div>
+    <div class="example-row">
+      {% for example in examples %}
+      <button class="ghost example-chip" type="button" data-coach-example="{{ example }}">{{ example }}</button>
+      {% endfor %}
+    </div>
+    <form class="prompt-row" method="post">
+      <input id="coach-input" name="message" placeholder="Ask the coach a question" required>
+      <button type="submit">Ask</button>
+    </form>
+    <div class="chat-list">
+      {% for item in messages %}
+        {% if item.role == 'user' %}
+        <article class="chat-bubble user">{{ item.content }}</article>
+        {% else %}
+        <article class="chat-bubble coach">
+          <strong>{{ item.matched_topic|replace('_', ' ')|title }}</strong>
+          <p>{{ item.answer }}</p>
+          <ul>
+            {% for action in item.actions %}
+            <li>{{ action }}</li>
+            {% endfor %}
+          </ul>
+        </article>
+        {% endif %}
+      {% else %}
+      <p class="muted-empty">No coach conversation yet. Use one of the example questions to begin.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h2>Your Current Snapshot</h2><p>The coach uses this to personalize its advice.</p></div>
+    <ul class="stat-list">
+      <li><span>Productivity score</span><strong>{{ analytics.score }}/100</strong></li>
+      <li><span>Completed tasks</span><strong>{{ analytics.completed_tasks }}</strong></li>
+      <li><span>Focus minutes</span><strong>{{ analytics.focus_minutes }}</strong></li>
+      <li><span>Hobby minutes</span><strong>{{ analytics.hobby_minutes }}</strong></li>
+      <li><span>Completion rate</span><strong>{{ analytics.completion_rate }}%</strong></li>
+    </ul>
+    <div class="topic-cloud">
+      {% for topic, count in topic_breakdown.items() %}
+      <span>{{ topic|replace('_', ' ') }} · {{ count }}</span>
+      {% else %}
+      <span>Ask a question to build your history.</span>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

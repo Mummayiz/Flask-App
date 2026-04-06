@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="surface-header">
+  <div>
+    <p class="eyebrow">User Detail</p>
+    <h1>{{ target.username }}</h1>
+    <p class="section-copy">{{ target.email }}</p>
+  </div>
+  <div class="score-badge">{{ analytics.score }}<span>score</span></div>
+</section>
+
+<section class="metric-row">
+  <article><span>Completed Tasks</span><strong>{{ analytics.completed_tasks }}</strong></article>
+  <article><span>Focus Minutes</span><strong>{{ analytics.focus_minutes }}</strong></article>
+  <article><span>Hobby Minutes</span><strong>{{ analytics.hobby_minutes }}</strong></article>
+  <article><span>Completion Rate</span><strong>{{ analytics.completion_rate }}%</strong></article>
+</section>
+
+<section class="workspace-grid">
+  <div class="panel">
+    <div class="panel-head"><h2>Tasks</h2><p>Tasks belonging only to this user.</p></div>
+    <div class="stack-list">
+      {% for item in records.tasks[:12] %}
+      <article class="stack-item"><div><strong>{{ item.title }}</strong><p>{{ item.status|replace('_', ' ') }} · {{ item.priority }}</p></div></article>
+      {% else %}
+      <p class="muted-empty">No tasks logged.</p>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h2>Focus Sessions</h2><p>Protected time blocks for this user.</p></div>
+    <div class="stack-list">
+      {% for item in records.focus[:12] %}
+      <article class="stack-item"><div><strong>{{ item.duration_minutes }} minutes</strong><p>{{ item.date }}</p></div></article>
+      {% else %}
+      <p class="muted-empty">No focus sessions logged.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="workspace-grid">
+  <div class="panel">
+    <div class="panel-head"><h2>Hobbies</h2><p>Recovery and leisure tracking for this user.</p></div>
+    <div class="stack-list">
+      {% for item in records.hobbies[:12] %}
+      <article class="stack-item"><div><strong>{{ item.name }}</strong><p>{{ item.duration_minutes }} minutes on {{ item.date }}</p></div></article>
+      {% else %}
+      <p class="muted-empty">No hobbies logged.</p>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h2>Activity Logs</h2><p>Recent events captured for this user.</p></div>
+    <ul class="activity-list">
+      {% for item in records.activity_logs[:15] %}
+      <li><strong>{{ item.category|title }}</strong><span>{{ item.description }}</span><em>{{ item.date }}</em></li>
+      {% else %}
+      <li class="muted-empty">No activity logs.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+{% endblock %}

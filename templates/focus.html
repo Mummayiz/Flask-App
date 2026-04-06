@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="surface-header">
+  <div>
+    <p class="eyebrow">Focus</p>
+    <h1>Protect time that actually counts.</h1>
+    <p class="section-copy">Track deep work blocks and keep that signal visible.</p>
+  </div>
+  <div class="score-badge slim">{{ total_minutes }}<span>minutes logged</span></div>
+</section>
+<section class="workspace-grid dual">
+  <form class="panel form-panel" method="post">
+    <div class="panel-head"><h2>Log Session</h2><p>Use the timer or enter a duration manually.</p></div>
+    <div class="timer-shell">
+      <div id="focus-timer" class="timer-display">25:00</div>
+      <div class="timer-actions">
+        <button class="ghost" type="button" data-timer-start>Start</button>
+        <button class="ghost" type="button" data-timer-reset>Reset</button>
+      </div>
+    </div>
+    <label>Duration (minutes)<input id="focus-minutes" type="number" name="duration_minutes" value="25" min="5" required></label>
+    <label>Date<input type="date" name="date" value="{{ today }}" required></label>
+    <label>Notes<textarea name="notes" rows="3"></textarea></label>
+    <button type="submit">Save focus session</button>
+  </form>
+  <div class="panel">
+    <div class="panel-head"><h2>Recent Sessions</h2><p>Each saved session improves your analytics.</p></div>
+    <div class="stack-list">
+      {% for item in sessions %}
+      <article class="stack-item"><div><strong>{{ item.duration_minutes }} minutes</strong><p>{{ item.date }}{% if item.notes %} · {{ item.notes }}{% endif %}</p></div></article>
+      {% else %}
+      <p class="muted-empty">No focus sessions logged yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

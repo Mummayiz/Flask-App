@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="surface-header">
+  <div>
+    <p class="eyebrow">Tasks</p>
+    <h1>Turn your list into visible progress.</h1>
+    <p class="section-copy">Add tasks, update status, and keep your workload realistic.</p>
+  </div>
+</section>
+<section class="workspace-grid dual">
+  <form class="panel form-panel" method="post">
+    <div class="panel-head"><h2>Add Task</h2><p>Everything here is saved only for your own account.</p></div>
+    <label>Title<input name="title" placeholder="What needs to get done?" required></label>
+    <label>Priority<select name="priority"><option>low</option><option selected>medium</option><option>high</option></select></label>
+    <label>Difficulty<select name="difficulty"><option>easy</option><option selected>medium</option><option>hard</option></select></label>
+    <label>Due Date<input type="date" name="due_date" value="{{ today }}"></label>
+    <label>Status<select name="status"><option>pending</option><option>in_progress</option><option>completed</option></select></label>
+    <button type="submit">Save task</button>
+  </form>
+  <div class="panel">
+    <div class="panel-head"><h2>Task List</h2><p>{{ tasks|length }} recorded task{{ '' if tasks|length == 1 else 's' }}.</p></div>
+    <div class="stack-list">
+      {% for task in tasks %}
+      <article class="stack-item">
+        <div>
+          <strong>{{ task.title }}</strong>
+          <p>{{ task.priority|title }} priority, {{ task.difficulty|title }} difficulty{% if task.due_date %}, due {{ task.due_date }}{% endif %}</p>
+        </div>
+        <div class="inline-actions">
+          <form method="post" action="{{ url_for('app_routes.task_status', task_id=task.id) }}">
+            <input type="hidden" name="status" value="{{ 'completed' if task.status != 'completed' else 'pending' }}">
+            <button class="ghost" type="submit">{{ 'Complete' if task.status != 'completed' else 'Reopen' }}</button>
+          </form>
+          <span class="pill">{{ task.status.replace('_', ' ') }}</span>
+          <form method="post" action="{{ url_for('app_routes.task_delete', task_id=task.id) }}">
+            <button class="ghost danger" type="submit">Delete</button>
+          </form>
+        </div>
+      </article>
+      {% else %}
+      <p class="muted-empty">No tasks yet. Add one to start your day.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

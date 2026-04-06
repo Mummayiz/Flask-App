@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ app_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  </head>
+  <body data-theme="light">
+    <div class="shell">
+      {% if current_user %}
+      <aside class="sidebar">
+        <div>
+          <p class="brand-kicker">{{ 'Admin workspace' if current_user.role == 'admin' else 'Personal workspace' }}</p>
+          <a class="brand" href="{{ url_for('app_routes.admin_dashboard' if current_user.role == 'admin' else 'app_routes.user_dashboard') }}">Pulseboard</a>
+          <p class="brand-copy">
+            {% if current_user.role == 'admin' %}
+            Compare users, inspect trends, and monitor platform-wide productivity.
+            {% else %}
+            Track your own work, focus time, hobbies, and consistency in one place.
+            {% endif %}
+          </p>
+        </div>
+
+        <nav class="nav">
+          {% if current_user.role == 'admin' %}
+          <a href="{{ url_for('app_routes.admin_dashboard') }}">Admin Dashboard</a>
+          {% else %}
+          <a href="{{ url_for('app_routes.user_dashboard') }}">User Dashboard</a>
+          <a href="{{ url_for('app_routes.tasks') }}">Tasks</a>
+          <a href="{{ url_for('app_routes.calendar') }}">Calendar</a>
+          <a href="{{ url_for('app_routes.focus') }}">Focus</a>
+          <a href="{{ url_for('app_routes.hobbies') }}">Hobbies</a>
+          <a href="{{ url_for('app_routes.ai_coach') }}">AI Coach</a>
+          {% endif %}
+        </nav>
+
+        <div class="sidebar-foot">
+          <div>
+            <p>{{ current_user.username }}</p>
+            <span>{{ current_user.role|title }}</span>
+          </div>
+          <div class="sidebar-actions">
+            <button class="ghost" type="button" data-theme-toggle>Toggle theme</button>
+            <a class="quiet-link" href="{{ url_for('app_routes.logout') }}">Sign out</a>
+          </div>
+        </div>
+      </aside>
+      {% endif %}
+
+      <main class="page {% if not current_user %}auth-page{% endif %}">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+          <div class="flash-stack">
+            {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+          {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/chart.umd.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  </body>
+  </html>

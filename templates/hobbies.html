@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="surface-header">
+  <div>
+    <p class="eyebrow">Hobbies</p>
+    <h1>Make recovery visible too.</h1>
+    <p class="section-copy">A strong productivity system also tracks the time that restores you.</p>
+  </div>
+  <div class="score-badge slim">{{ total_minutes }}<span>minutes logged</span></div>
+</section>
+<section class="workspace-grid dual">
+  <form class="panel form-panel" method="post">
+    <div class="panel-head"><h2>Log Hobby</h2><p>Track the personal time that keeps your routine sustainable.</p></div>
+    <label>Name<input name="name" placeholder="Reading, walking, music..." required></label>
+    <label>Duration (minutes)<input type="number" name="duration_minutes" value="30" min="5" required></label>
+    <label>Date<input type="date" name="date" value="{{ today }}" required></label>
+    <label>Notes<textarea name="notes" rows="3"></textarea></label>
+    <button type="submit">Save hobby session</button>
+  </form>
+  <div class="panel">
+    <div class="panel-head"><h2>Hobby Log</h2><p>Recent recovery and personal-interest sessions.</p></div>
+    <div class="stack-list">
+      {% for item in hobbies %}
+      <article class="stack-item">
+        <div><strong>{{ item.name }}</strong><p>{{ item.duration_minutes }} minutes on {{ item.date }}</p></div>
+        <form method="post" action="{{ url_for('app_routes.hobby_delete', hobby_id=item.id) }}">
+          <button class="ghost danger" type="submit">Delete</button>
+        </form>
+      </article>
+      {% else %}
+      <p class="muted-empty">No hobby sessions yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="auth-layout">
+  <div class="auth-poster">
+    <p class="eyebrow">New account</p>
+    <h1>Create your own productivity workspace.</h1>
+    <p>Your account gets a dedicated dashboard, calendar, focus tracker, hobbies log, and coach view.</p>
+  </div>
+
+  <form class="auth-form" method="post">
+    <h2>Register</h2>
+    <label>Username<input name="username" minlength="3" placeholder="Choose a username" required></label>
+    <label>Email<input type="email" name="email" placeholder="you@example.com" required></label>
+    <label>Password<input type="password" name="password" minlength="8" placeholder="Minimum 8 characters" required></label>
+    <button type="submit">Create account</button>
+    <p class="form-note">Already registered? <a href="{{ url_for('app_routes.login') }}">Sign in</a></p>
+  </form>
+</section>
+{% endblock %}

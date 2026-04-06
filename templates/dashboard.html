@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="surface-header">
+  <div>
+    <p class="eyebrow">User Dashboard</p>
+    <h1>Your progress, your pace, your own data.</h1>
+    <p class="section-copy">This dashboard shows only your tasks, focus time, hobbies, and activity pattern.</p>
+  </div>
+  <div class="score-badge">{{ analytics.score }}<span>productivity score</span></div>
+</section>
+
+<section class="metric-row">
+  <article><span>Completed Tasks</span><strong>{{ analytics.completed_tasks }}</strong></article>
+  <article><span>Focus Minutes</span><strong>{{ analytics.focus_minutes }}</strong></article>
+  <article><span>Hobby Minutes</span><strong>{{ analytics.hobby_minutes }}</strong></article>
+  <article><span>Completion Rate</span><strong>{{ analytics.completion_rate }}%</strong></article>
+</section>
+
+<section class="workspace-grid">
+  <div class="panel">
+    <div class="panel-head"><h2>Activity Heatmap</h2><p>Recent momentum across work and recovery.</p></div>
+    <div class="heatmap" data-heatmap='{{ analytics.heatmap|tojson }}'></div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h2>Daily Performance</h2><p>Task and focus charts update from your current JSON data.</p></div>
+    <div class="chart-grid">
+      <div>
+        <h3>Task Status</h3>
+        <canvas class="chart-canvas" data-chart-kind="bar" data-chart='{{ chart_payload|safe }}' data-key="tasks"></canvas>
+      </div>
+      <div>
+        <h3>Priority Mix</h3>
+        <canvas class="chart-canvas" data-chart-kind="doughnut" data-chart='{{ chart_payload|safe }}' data-key="priorities"></canvas>
+      </div>
+      <div class="chart-wide">
+        <h3>Daily Focus</h3>
+        <canvas class="chart-canvas" data-chart-kind="line" data-chart='{{ chart_payload|safe }}' data-key="dailyFocus"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="workspace-grid">
+  <div class="panel">
+    <div class="panel-head"><h2>Upcoming</h2><p>{{ analytics.upcoming_count }} scheduled item{{ '' if analytics.upcoming_count == 1 else 's' }} ahead.</p></div>
+    {% if analytics.next_event %}
+    <div class="event-focus">
+      <strong>{{ analytics.next_event.title }}</strong>
+      <span>{{ analytics.next_event.date }} {% if analytics.next_event.time %}at {{ analytics.next_event.time }}{% endif %}</span>
+      <p>{{ analytics.next_event.type|title }}</p>
+    </div>
+    {% else %}
+    <p class="muted-empty">No upcoming event yet. Add one from the calendar page.</p>
+    {% endif %}
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h2>Recent Activity</h2><p>The latest actions that influenced your score.</p></div>
+    <ul class="activity-list">
+      {% for item in analytics.recent_activity %}
+      <li><strong>{{ item.category|title }}</strong><span>{{ item.description }}</span><em>{{ item.date }}</em></li>
+      {% else %}
+      <li class="muted-empty">No activity recorded yet.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+{% endblock %}
