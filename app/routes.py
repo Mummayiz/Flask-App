@@ -118,7 +118,22 @@ def login():
         session["user_id"] = user["id"]
         store.log(user["id"], "auth", "Signed in.", 1)
         return redirect(url_for(dashboard_endpoint_for(user)))
-    return render_template("auth/login.html", **page_context())
+    return render_template("auth/login.html", **page_context(), admin_mode=False)
+
+
+@app_routes.route("/admin/login", methods=["GET", "POST"])
+def admin_login():
+    if request.method == "POST":
+        login_value = request.form.get("login", "").strip()
+        password = request.form.get("password", "")
+        user = store.get_user_by_login(login_value)
+        if not user or user.get("role") != "admin" or not verify_password(password, user["password_hash"]):
+            flash("Invalid admin credentials.", "error")
+            return render_template("auth/login.html", **page_context(), admin_mode=True)
+        session["user_id"] = user["id"]
+        store.log(user["id"], "auth", "Signed in to admin workspace.", 1)
+        return redirect(url_for("app_routes.admin_dashboard"))
+    return render_template("auth/login.html", **page_context(), admin_mode=True)
 
 
 @app_routes.route("/logout")
@@ -340,11 +355,11 @@ def admin_dashboard():
     query = request.args.get("q", "").strip().lower()
     filtered_users = [
         item
-        for item in users
-        if item.get("role") != "admin" and (not query or query in item.get("username", "").lower() or query in item.get("email", "").lower())
+        for item in analytics["user_rows"]
+        if not query or query in item.get("name", "").lower() or query in item.get("email", "").lower()
     ]
     return render_template(
-        "admin/index.html",
+        "admin_dashboard.html",
         **page_context(user),
         analytics=analytics,
         users=filtered_users,
@@ -363,4 +378,16 @@ def admin_user(user_id: str):
         return redirect(url_for("app_routes.admin_dashboard"))
     records = user_records(user_id)
     analytics = user_analytics(target, **records)
-    return render_template("admin/user_detail.html", **page_context(user), target=target, analytics=analytics, records=records)
+    chart_payload = {
+        "taskStatus": analytics["task_status_counts"],
+        "taskPriority": analytics["task_priority_counts"],
+        "dailyFocus": analytics["daily_focus"],
+    }
+    return render_template(
+        "admin/user_detail.html",
+        **page_context(user),
+        target=target,
+        analytics=analytics,
+        records=records,
+        chart_payload=json.dumps(chart_payload),
+    )

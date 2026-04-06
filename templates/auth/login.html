@@ -3,20 +3,36 @@
 <section class="auth-layout auth-layout-login">
   <div class="auth-poster">
     <div class="auth-poster-top">
-      <p class="eyebrow">Pulseboard</p>
+      <p class="eyebrow">{{ "Admin access" if admin_mode else "Pulseboard" }}</p>
       <div class="auth-chip-row">
+        {% if admin_mode %}
+        <span class="auth-chip">Platform analytics</span>
+        <span class="auth-chip">User search</span>
+        <span class="auth-chip">Trend charts</span>
+        {% else %}
         <span class="auth-chip">Tasks</span>
         <span class="auth-chip">Focus</span>
         <span class="auth-chip">Hobbies</span>
         <span class="auth-chip">Coach</span>
+        {% endif %}
       </div>
     </div>
 
     <div class="auth-poster-body">
-      <h1>Build calm, high-output days from habits you can actually see.</h1>
+      <h1>
+        {% if admin_mode %}
+        Monitor platform-wide productivity with a clean control surface.
+        {% else %}
+        Build calm, high-output days from habits you can actually see.
+        {% endif %}
+      </h1>
       <p>
+        {% if admin_mode %}
+        Sign in as an administrator to compare users, inspect activity, and review live analytics built from JSON data.
+        {% else %}
         Track your work, focus blocks, recovery time, and personal trends in one bright,
         polished workspace that feels like a real product.
+        {% endif %}
       </p>
     </div>
 
@@ -38,22 +54,29 @@
 
   <form class="auth-form auth-card" method="post">
     <div class="auth-form-head">
-      <p class="eyebrow">Welcome back</p>
-      <h2>Sign in</h2>
-      <p class="form-note">Enter your details to open your personal productivity workspace.</p>
+      <p class="eyebrow">{{ "Protected route" if admin_mode else "Welcome back" }}</p>
+      <h2>{{ "Admin sign in" if admin_mode else "Sign in" }}</h2>
+      <p class="form-note">
+        {{ "Use your admin credentials to open the platform analytics dashboard." if admin_mode else "Enter your details to open your personal productivity workspace." }}
+      </p>
     </div>
 
     <label>Username or email<input name="login" placeholder="Enter username or email" required></label>
     <label>Password<input type="password" name="password" placeholder="Enter password" required></label>
 
-    <button type="submit">Enter workspace</button>
+    <button type="submit">{{ "Open admin dashboard" if admin_mode else "Enter workspace" }}</button>
 
     <div class="auth-demo">
       <span>Admin demo</span>
       <strong>admin / admin123</strong>
     </div>
 
+    {% if admin_mode %}
+    <p class="form-note">Need the regular sign in? <a href="{{ url_for('app_routes.login') }}">Go to user login</a></p>
+    {% else %}
     <p class="form-note">Need an account? <a href="{{ url_for('app_routes.register') }}">Create one</a></p>
+    <p class="form-note">Admin? <a href="{{ url_for('app_routes.admin_login') }}">Use admin sign in</a></p>
+    {% endif %}
   </form>
 </section>
 {% endblock %}

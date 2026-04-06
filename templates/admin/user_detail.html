@@ -1,64 +1,204 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="surface-header">
+<section class="surface-header admin-detail-header">
   <div>
     <p class="eyebrow">User Detail</p>
     <h1>{{ target.username }}</h1>
     <p class="section-copy">{{ target.email }}</p>
+    <div class="admin-detail-meta">
+      <span class="pill">{{ target.role|title }}</span>
+      <span class="pill">Joined {{ target.created_at[:10] if target.created_at else "Unknown" }}</span>
+      <span class="pill">{{ records.activity_logs|length }} activity events</span>
+    </div>
   </div>
-  <div class="score-badge">{{ analytics.score }}<span>score</span></div>
+  <div class="admin-detail-score">
+    <div class="score-badge">
+      {{ analytics.score }}
+      <span>productivity score</span>
+    </div>
+    <a class="ghost" href="{{ url_for('app_routes.admin_dashboard') }}">Back to admin dashboard</a>
+  </div>
 </section>
 
-<section class="metric-row">
-  <article><span>Completed Tasks</span><strong>{{ analytics.completed_tasks }}</strong></article>
-  <article><span>Focus Minutes</span><strong>{{ analytics.focus_minutes }}</strong></article>
-  <article><span>Hobby Minutes</span><strong>{{ analytics.hobby_minutes }}</strong></article>
-  <article><span>Completion Rate</span><strong>{{ analytics.completion_rate }}%</strong></article>
+<section class="admin-detail-grid">
+  <article class="admin-detail-hero">
+    <div class="admin-detail-hero-copy">
+      <h2>Snapshot</h2>
+      <p>This workspace gives you a quick view of how this user balances task execution, focus blocks, leisure time, and overall consistency.</p>
+    </div>
+    <div class="admin-detail-kpis">
+      <article>
+        <span>Completed tasks</span>
+        <strong>{{ analytics.completed_tasks }}</strong>
+      </article>
+      <article>
+        <span>Focus minutes</span>
+        <strong>{{ analytics.focus_minutes }}</strong>
+      </article>
+      <article>
+        <span>Hobby minutes</span>
+        <strong>{{ analytics.hobby_minutes }}</strong>
+      </article>
+      <article>
+        <span>Completion rate</span>
+        <strong>{{ analytics.completion_rate }}%</strong>
+      </article>
+      <article>
+        <span>Avg focus session</span>
+        <strong>{{ analytics.average_focus_minutes }}</strong>
+      </article>
+      <article>
+        <span>Upcoming events</span>
+        <strong>{{ analytics.upcoming_count }}</strong>
+      </article>
+    </div>
+  </article>
+
+  <article class="panel admin-detail-sidecard">
+    <div class="panel-head">
+      <h2>At a glance</h2>
+      <p>Recent planning and participation signals.</p>
+    </div>
+    <ul class="stat-list admin-detail-stat-list">
+      <li><span>Total tasks</span><strong>{{ analytics.total_tasks }}</strong></li>
+      <li><span>Focus sessions</span><strong>{{ records.focus|length }}</strong></li>
+      <li><span>Hobby entries</span><strong>{{ records.hobbies|length }}</strong></li>
+      <li><span>Calendar events</span><strong>{{ records.calendar_events|length }}</strong></li>
+    </ul>
+    {% if analytics.next_event %}
+    <div class="event-focus">
+      <p class="eyebrow">Next event</p>
+      <h3>{{ analytics.next_event.title }}</h3>
+      <p>{{ analytics.next_event.date }}{% if analytics.next_event.time %} at {{ analytics.next_event.time }}{% endif %}</p>
+    </div>
+    {% else %}
+    <p class="muted-empty">No upcoming events scheduled for this user.</p>
+    {% endif %}
+  </article>
 </section>
 
-<section class="workspace-grid">
-  <div class="panel">
-    <div class="panel-head"><h2>Tasks</h2><p>Tasks belonging only to this user.</p></div>
+<section class="admin-detail-chart-grid">
+  <article class="admin-chart-panel">
+    <div class="panel-head">
+      <h2>Task status mix</h2>
+      <p>How current work is distributed across statuses.</p>
+    </div>
+    <canvas class="chart-canvas" data-chart-kind="doughnut" data-chart='{{ chart_payload|safe }}' data-key="taskStatus"></canvas>
+  </article>
+  <article class="admin-chart-panel">
+    <div class="panel-head">
+      <h2>Task priorities</h2>
+      <p>Priority spread across the user’s task list.</p>
+    </div>
+    <canvas class="chart-canvas" data-chart-kind="bar" data-chart='{{ chart_payload|safe }}' data-key="taskPriority"></canvas>
+  </article>
+  <article class="admin-chart-panel chart-wide">
+    <div class="panel-head">
+      <h2>Daily focus trend</h2>
+      <p>Logged focus minutes by day.</p>
+    </div>
+    <canvas class="chart-canvas" data-chart-kind="line" data-chart='{{ chart_payload|safe }}' data-key="dailyFocus"></canvas>
+  </article>
+</section>
+
+<section class="workspace-grid admin-detail-bottom">
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Recent tasks</h2>
+      <p>Tasks belonging only to this user.</p>
+    </div>
     <div class="stack-list">
-      {% for item in records.tasks[:12] %}
-      <article class="stack-item"><div><strong>{{ item.title }}</strong><p>{{ item.status|replace('_', ' ') }} · {{ item.priority }}</p></div></article>
+      {% for item in records.tasks[:10] %}
+      <article class="stack-item">
+        <div>
+          <strong>{{ item.title }}</strong>
+          <p>{{ item.status|replace('_', ' ') }} | {{ item.priority }} priority | due {{ item.due_date }}</p>
+        </div>
+        <div class="metric-mini">
+          <span>{{ item.difficulty|title }}</span>
+          <em>difficulty</em>
+        </div>
+      </article>
       {% else %}
       <p class="muted-empty">No tasks logged.</p>
       {% endfor %}
     </div>
-  </div>
-  <div class="panel">
-    <div class="panel-head"><h2>Focus Sessions</h2><p>Protected time blocks for this user.</p></div>
-    <div class="stack-list">
-      {% for item in records.focus[:12] %}
-      <article class="stack-item"><div><strong>{{ item.duration_minutes }} minutes</strong><p>{{ item.date }}</p></div></article>
-      {% else %}
-      <p class="muted-empty">No focus sessions logged.</p>
-      {% endfor %}
-    </div>
-  </div>
-</section>
+  </article>
 
-<section class="workspace-grid">
-  <div class="panel">
-    <div class="panel-head"><h2>Hobbies</h2><p>Recovery and leisure tracking for this user.</p></div>
-    <div class="stack-list">
-      {% for item in records.hobbies[:12] %}
-      <article class="stack-item"><div><strong>{{ item.name }}</strong><p>{{ item.duration_minutes }} minutes on {{ item.date }}</p></div></article>
-      {% else %}
-      <p class="muted-empty">No hobbies logged.</p>
-      {% endfor %}
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Recent activity</h2>
+      <p>Latest events captured for this user.</p>
     </div>
-  </div>
-  <div class="panel">
-    <div class="panel-head"><h2>Activity Logs</h2><p>Recent events captured for this user.</p></div>
-    <ul class="activity-list">
-      {% for item in records.activity_logs[:15] %}
-      <li><strong>{{ item.category|title }}</strong><span>{{ item.description }}</span><em>{{ item.date }}</em></li>
+    <ul class="activity-list admin-detail-activity-list">
+      {% for item in records.activity_logs[:12] %}
+      <li>
+        <div>
+          <strong>{{ item.category|title }}</strong>
+          <span>{{ item.description }}</span>
+        </div>
+        <em>{{ item.date }}</em>
+      </li>
       {% else %}
       <li class="muted-empty">No activity logs.</li>
       {% endfor %}
     </ul>
+  </article>
+</section>
+
+<section class="workspace-grid admin-detail-bottom">
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Focus sessions</h2>
+      <p>Protected time blocks recorded by this user.</p>
+    </div>
+    <div class="stack-list">
+      {% for item in records.focus[:10] %}
+      <article class="stack-item">
+        <div>
+          <strong>{{ item.duration_minutes }} minutes</strong>
+          <p>{{ item.notes or "Focus session" }}</p>
+        </div>
+        <div class="metric-mini">
+          <span>{{ item.date }}</span>
+          <em>logged</em>
+        </div>
+      </article>
+      {% else %}
+      <p class="muted-empty">No focus sessions logged.</p>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Hobbies and recovery</h2>
+      <p>Leisure and recovery sessions tracked by this user.</p>
+    </div>
+    <div class="stack-list">
+      {% for item in records.hobbies[:10] %}
+      <article class="stack-item">
+        <div>
+          <strong>{{ item.name }}</strong>
+          <p>{{ item.notes or "Hobby session" }}</p>
+        </div>
+        <div class="metric-mini">
+          <span>{{ item.duration_minutes }} min</span>
+          <em>{{ item.date }}</em>
+        </div>
+      </article>
+      {% else %}
+      <p class="muted-empty">No hobbies logged.</p>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <h2>Activity heatmap</h2>
+    <p>Consistency view built from the user’s recorded activity logs.</p>
   </div>
+  <div class="heatmap" data-heatmap='{{ analytics.heatmap|tojson }}'></div>
 </section>
 {% endblock %}

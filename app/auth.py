@@ -37,9 +37,12 @@ def admin_required(view: Callable):
     @wraps(view)
     def wrapped(*args, **kwargs):
         user = current_user()
-        if not user or user.get("role") != "admin":
+        if not user:
+            flash("Sign in as admin to continue.", "warning")
+            return redirect(url_for("app_routes.admin_login"))
+        if user.get("role") != "admin":
             flash("Admin access is required.", "warning")
-            return redirect(url_for("app_routes.dashboard"))
+            return redirect(url_for("app_routes.user_dashboard"))
         return view(*args, **kwargs)
 
     return wrapped

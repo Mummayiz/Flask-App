@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="surface-header admin-surface-header">
+  <div>
+    <p class="eyebrow">Admin Dashboard</p>
+    <h1>Platform analytics and user monitoring</h1>
+    <p class="section-copy">Review rankings, live activity, focus patterns, and user-level productivity from your JSON dataset.</p>
+  </div>
+  <div class="score-badge slim">
+    {{ analytics.average_score }}
+    <span>avg productivity score</span>
+  </div>
+</section>
+
+<section class="admin-stat-grid">
+  <article class="admin-stat-card">
+    <span>Total users</span>
+    <strong>{{ analytics.total_users }}</strong>
+    <p>Registered non-admin accounts</p>
+  </article>
+  <article class="admin-stat-card">
+    <span>Active users</span>
+    <strong>{{ analytics.active_users }}</strong>
+    <p>Users with activity in the last 7 days</p>
+  </article>
+  <article class="admin-stat-card">
+    <span>Total tasks</span>
+    <strong>{{ analytics.total_tasks }}</strong>
+    <p>Tasks stored across all user accounts</p>
+  </article>
+  <article class="admin-stat-card">
+    <span>Total focus time</span>
+    <strong>{{ analytics.total_focus_minutes }}</strong>
+    <p>Minutes logged across focus sessions</p>
+  </article>
+</section>
+
+<section class="admin-chart-layout">
+  <article class="admin-chart-panel chart-wide">
+    <div class="panel-head">
+      <h2>Weekly productivity trend</h2>
+      <p>Computed from completed tasks, focus minutes, and hobby time using the shared productivity formula.</p>
+    </div>
+    <canvas id="weekly-productivity-chart"></canvas>
+  </article>
+
+  <article class="admin-chart-panel">
+    <div class="panel-head">
+      <h2>Top 10 productive users</h2>
+      <p>Ranked by the calculated productivity score.</p>
+    </div>
+    <canvas id="top-productive-chart"></canvas>
+  </article>
+
+  <article class="admin-chart-panel">
+    <div class="panel-head">
+      <h2>Top 10 active users</h2>
+      <p>Based on real activity log counts.</p>
+    </div>
+    <canvas id="top-active-chart"></canvas>
+  </article>
+
+  <article class="admin-chart-panel">
+    <div class="panel-head">
+      <h2>Task completion rate</h2>
+      <p>Completion percentage per top user.</p>
+    </div>
+    <canvas id="completion-rate-chart"></canvas>
+  </article>
+
+  <article class="admin-chart-panel">
+    <div class="panel-head">
+      <h2>Average focus time</h2>
+      <p>Average focus minutes per session for each user.</p>
+    </div>
+    <canvas id="average-focus-chart"></canvas>
+  </article>
+
+  <article class="admin-chart-panel">
+    <div class="panel-head">
+      <h2>Daily active users</h2>
+      <p>Unique users active per day over the last two weeks.</p>
+    </div>
+    <canvas id="daily-active-chart"></canvas>
+  </article>
+
+  <article class="admin-chart-panel">
+    <div class="panel-head">
+      <h2>Most common task priorities</h2>
+      <p>Distribution of low, medium, and high priority tasks.</p>
+    </div>
+    <canvas id="task-priority-chart"></canvas>
+  </article>
+</section>
+
+<section class="workspace-grid admin-bottom-grid">
+  <article class="panel">
+    <div class="panel-head">
+      <h2>User directory</h2>
+      <p>Search a user and open their full activity profile.</p>
+    </div>
+    <form class="prompt-row" method="get">
+      <input name="q" value="{{ query }}" placeholder="Search username or email">
+      <button type="submit">Search</button>
+    </form>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Score</th>
+            <th>Completion</th>
+            <th>Avg focus</th>
+            <th>Activity</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in users %}
+          <tr>
+            <td>
+              <a class="table-user-link" href="{{ url_for('app_routes.admin_user', user_id=item.id) }}">
+                <strong>{{ item.name }}</strong>
+                <span>{{ item.email }}</span>
+              </a>
+            </td>
+            <td>{{ item.score }}</td>
+            <td>{{ item.completion_rate }}%</td>
+            <td>{{ item.average_focus_minutes }} min</td>
+            <td>{{ item.activity_count }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="5" class="muted-empty">No users match that search.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Top productivity summary</h2>
+      <p>Quick comparison of the strongest performers right now.</p>
+    </div>
+    <div class="stack-list">
+      {% for item in analytics.top_productive %}
+      <article class="stack-item">
+        <div>
+          <strong>{{ item.name }}</strong>
+          <p>{{ item.completed_tasks }} completed tasks | {{ item.focus_minutes }} focus min | {{ item.hobby_minutes }} hobby min</p>
+        </div>
+        <div class="metric-mini">
+          <span>{{ item.score }}</span>
+          <em>score</em>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+
+<script id="admin-chart-data" type="application/json">{{ chart_payload|safe }}</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin_charts.js') }}"></script>
+{% endblock %}
